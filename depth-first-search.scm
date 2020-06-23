@@ -47,13 +47,35 @@
     (define parents (make-hash-table))
     (define back-edges '())
 
-    (define (process_edge a b)
-      (cond [(not (eq? (hashq-ref parent a) b))
-             (append back-edges '((a . b)))]
+    (define (process-edge a b)
+      (define children (hashq-ref parents b '()))
+      (displayln a b children)
+      
+      (cond [(member a children)
+             (set! back-edges 
+               (cons `(,a . ,b) back-edges))]
             [else
-              (hashq-set! parents a b)]))
+              (hashq-set! parents a (cons b children))]))
 
-    (dfs G #:process-edge process-edge))
+    (dfs G #:process-edge process-edge)
+
+    back-edges)
+
+
+(define A
+  '(a (b c)))
+
+(define B
+  '(a (b 
+       (c (a)))))
+
+(define C
+  '(a ((b (c))
+       (c (d e f)))))
+
+(check-equal (find-cycles A) '() "should return empty cycles list")
+(check-equal (find-cycles B) '((c . a)) "should return single cycle")
+(check-equal (find-cycles C) '((b . c)) "should return single cycle")
 
 ;(define A
   ;'(a (b c)))

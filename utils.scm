@@ -1,7 +1,8 @@
 (define-module (utils)
-    #:export (check-equal displayln))
+    #:export (check-equal check-set-equal displayln))
 
-(use-modules (ice-9 optargs))
+(use-modules (ice-9 optargs)
+             (srfi srfi-1))
 
 (define (displayln . args)
   (define (display-value val)
@@ -12,14 +13,23 @@
 
   (display "\n"))
 
-(define (check-equal a b . args)
+(define (print-failure a b args)
   (define name 
     (if (eq? (length args) 0)
         "Not equal"
         (car args)))
 
-  (when (not (equal? a b))
+    (displayln "=====")
+    (displayln "Test failed:" name)   
     (displayln "left:" a)    
-    (displayln "right:" b)    
-    (raise (string-append "Test failed: " name))))
+    (displayln "right:" b)
+    (displayln "=====")  )
+
+(define (check-equal a b . args)
+  (when (not (equal? a b))
+    (print-failure a b args)))
+
+(define (check-set-equal a b . args)
+  (when (not (lset= equal? a b))
+    (print-failure a b args)))
 

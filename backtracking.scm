@@ -1,29 +1,69 @@
 (add-to-load-path ".")
-(use-modules (ice-9 optargs))
+(use-modules (ice-9 optargs)
+             (srfi srfi-1)
+             (utils))
 
-(define (no-op-bool _) #f)
-(define (no-op _) '())
+(define (no-op-bool _state _i) #t)
+(define (no-op _state _i) '())
 
 (define* 
   (backtrack init-state
              #:key 
-             [max-depth 10000]
-             [is-solution no-op-bool]
+             [solution? no-op-bool]
+             [continue? no-op-bool]
              [process-solution no-op]
              [construct-candidates no-op])
   (define (iter state i)
-    (cond [(is-solution state)
-           (process-solution state i input)]
-          [(< i max-depth)
-           (define i^ (+ i 1))
-           (define candidates (construct-candidates state i^))
-
+    (cond [(solution? state i)
+           (process-solution state i)]
+          [(continue? state i)
            (for-each 
-             (lambda (candiate))
-             candidates
-             )
-           ]
-            
-          ))
+             (lambda (candidate)
+               (iter (cons candidate state) (+ i 1)))
+             (construct-candidates state i))
+           ]))
 
-  (iter init-state))
+  (iter init-state 0))
+
+
+;(define# (iterative-backtrack 
+           ;G
+           ;#:key 
+           ;[max-depth 10000]
+           ;[is-solution no-op-bool]
+           ;[process-solution no-op]
+           ;[construct-candidates no-op]) 
+    ;(define stack '())
+  
+    ;(while 
+      ;()
+      ;)
+  ;)
+
+(define (generate-subsets n)
+  (define init-state '())
+  (define solutions '())
+
+  (define (solution? state i) (equal? i n))
+  (define (construct-candidates state i) `((,i . #t) (,i . #f)))
+  (define (process-solution state i) 
+    (define solution 
+      (fold (lambda (x acc)
+              (if (equal? (cdr x) #t)
+                  (cons (car x) acc)
+                  acc))
+            '() state)) 
+
+    (set!
+      solutions
+      (cons solution solutions)))
+
+  (backtrack init-state
+             #:solution? solution?
+             #:process-solution process-solution
+             #:construct-candidates construct-candidates)
+  solutions)
+
+(check-set-equal 
+  (generate-subsets 3) 
+  '(() (0) (0 1) (0 1 2) (1 2) (0 2) (2) (1)))
