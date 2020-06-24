@@ -25,20 +25,29 @@
 
   (iter init-state 0))
 
+;(define* 
+  ;(iterative-backtrack 
+    ;init-state
+    ;#:key 
+    ;[solution? no-op-bool]
+    ;[continue? no-op-bool]
+    ;[process-solution no-op]
+    ;[construct-candidates no-op])
+  ;(define stack '())
+  ;(define )
 
-;(define# (iterative-backtrack 
-           ;G
-           ;#:key 
-           ;[max-depth 10000]
-           ;[is-solution no-op-bool]
-           ;[process-solution no-op]
-           ;[construct-candidates no-op]) 
-    ;(define stack '())
-  
-    ;(while 
-      ;()
-      ;)
-  ;)
+  ;(while (> (length stack) 0)
+    ;(let ([i (car stack)])
+
+      ;(set! stack (cdr stack))
+
+      ;(cond [(solution? state i)
+             ;(process-solution state i)]
+            ;[(continue? state i)
+             ;(let* ([candidates (construct-candidates state i)]
+                    ;[candidate-pairs (map (lambda (c) `(,i . ,c)) candidates)])
+               ;(set! stack (append stack candidates)))
+             ;]))))
 
 (define (generate-subsets n)
   (define init-state '())
@@ -64,6 +73,11 @@
              #:construct-candidates construct-candidates)
   solutions)
 
+(define (generate-permutations set)
+  
+  )
+
 (check-set-equal 
   (generate-subsets 3) 
   '(() (0) (0 1) (0 1 2) (1 2) (0 2) (2) (1)))
+
